@@ -53,4 +53,3 @@ def analyze_air_image(path: str, direction="auto"):
     kunoji = _inner_angle(shd, hip, ankle_back)
 
     return {"upper": upper, "lower": lower, "kunoji": kunoji}
-
