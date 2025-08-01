@@ -1,6 +1,5 @@
 streamlit==1.35.0
-opencv-python-headless==4.9.0.80   # ← headless だけを固定
-mediapipe==0.10.13                 # cp311 wheel あり。0.10.9 でも OK
-numpy==1.26.4
-pillow==10.4.0
-pandas==2.3.1
+opencv-python-headless==4.9.0.80      # GUI 無し OpenCV
+mediapipe==0.10.9                     # Py3.11 対応版
+numpy==1.26.4                         # Mediapipe 内部で使用
+pillow==10.4.0                        # 画像読み込み
