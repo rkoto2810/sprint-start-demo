@@ -1,5 +1,6 @@
 streamlit==1.35.0
-opencv-python-headless==4.9.0.80
-mediapipe==0.10.9
-Pillow>=10.0.0
-numpy>=1.24.0
+opencv-python-headless==4.9.0.80   # ← headless だけを固定
+mediapipe==0.10.13                 # cp311 wheel あり。0.10.9 でも OK
+numpy==1.26.4
+pillow==10.4.0
+pandas==2.3.1
