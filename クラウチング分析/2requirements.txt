@@ -1,0 +1,5 @@
+streamlit==1.35.0          # Web UI
+opencv-python-headless==4.8.1.78  # 4.8 系は Py3.9 対応 wheel あり
+mediapipe==0.10.8          # 最終の Py3.9 対応バージョン
+numpy
+pillow
