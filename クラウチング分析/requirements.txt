@@ -1,0 +1,5 @@
+streamlit==1.35.0                     # Web UI
+opencv-python-headless==4.9.0.80      # 画像処理（GUI 無し）
+mediapipe==0.10.9                     # 骨格検出
+pillow                                # 画像読み込み (PIL)
+numpy                                 # 数値演算
