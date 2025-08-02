@@ -1,12 +1,5 @@
-# requirements.txt  ★コピペ用★
 streamlit==1.35.0
-
-# ── MediaPipe 本体と「モデル同梱版」をペアで指定 ──
 mediapipe==0.10.21
-mediapipe-models==0.10.21   # ← 必ず同じ番号に！
-
-# ── OpenCV：Python 3.11 対応 wheel がある最新版 ──
 opencv-python-headless==4.11.0.86
-
 numpy==1.26.4
 pillow==10.3.0
