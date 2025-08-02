@@ -10,7 +10,7 @@ def detect_pose_bgr(img_bgr, static=True):
     """MediaPipe で骨格検出 → (landmarks | None, annotated_BGR) を返す"""
     with mp_pose.Pose(
             static_image_mode=static,
-            model_complexity=2,                 # ⬅ ここで精度優先
+            model_complexity=1,             
             min_detection_confidence=0.7,
             min_tracking_confidence=0.7) as pose:
         res = pose.process(cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
