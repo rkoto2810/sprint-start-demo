@@ -1,0 +1,8 @@
+streamlit==1.35.0
+
+# ★モデル同梱版 Mediapipe（cp310 wheel 有り）
+mediapipe==0.9.3
+
+opencv-python-headless==4.11.0.86
+numpy==1.26.4
+pillow==10.3.0
