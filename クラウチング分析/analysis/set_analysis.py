@@ -1,16 +1,22 @@
 # ============================ analysis/set_analysis.py ============================
 """
-Analyse a single **Set**-phase still image of a crouch start.
+クラウチングスタートの **Set**（クラウチング姿勢）静止画像を解析し，
+次の 3 つの角度 [deg] を返します。
 
-Returns a dictionary:
+    rear_knee      : 後脚（トレイル脚）膝角
+    front_knee     : 前脚（リード脚）膝角
+    torso_forward  : 体幹前傾角（肩–腰–膝）
+
+戻り値は dict で，オプションで骨格ラインを描画した画像も含められます::
+
     {
-        "rear_knee": <float>,      # knee angle of the rear (trail) leg  [deg]
-        "front_knee": <float>,     # knee angle of the front (lead) leg  [deg]
-        "torso_forward": <float>,  # torso–thigh forward-lean angle      [deg]
-        "overlay": np.ndarray | None   # skeleton-overlayed BGR image if requested
+        "rear_knee": <float>,
+        "front_knee": <float>,
+        "torso_forward": <float>,
+        "overlay": np.ndarray | None  # with_overlay=True の場合のみ
     }
 
-If pose detection fails the function returns **None**.
+Pose 検出に失敗した場合は **None** を返します。
 """
 
 from __future__ import annotations
@@ -19,31 +25,31 @@ import cv2
 import numpy as np
 import mediapipe as mp
 
-from .common_pose import detect_pose_bgr  # helper for pose + overlay
+from .common_pose import detect_pose_bgr  # MediaPipe + オーバーレイ
 
 mp_pose = mp.solutions.pose
 
 
 # --------------------------------------------------------------------------- #
-#  helpers
+#  補助関数
 # --------------------------------------------------------------------------- #
 def _angle(a_xy: list[float], b_xy: list[float], c_xy: list[float]) -> float:
-    """Compute inner angle ABC (in degrees)."""
+    """3 点 A-B-C の内角 ABC を度数で返す。"""
     a, b, c = map(np.asarray, (a_xy, b_xy, c_xy))
     ba, bc = a - b, c - b
     cosang = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
     return float(np.degrees(np.arccos(np.clip(cosang, -1.0, 1.0))))
 
 
-def _get_xy(lms, landmark_name: str, w: int, h: int) -> list[float]:
-    """Convert a MediaPipe landmark to pixel coordinates."""
-    idx = getattr(mp_pose.PoseLandmark, landmark_name).value
+def _get_xy(lms, name: str, w: int, h: int) -> list[float]:
+    """MediaPipe のランドマーク → 画素座標 [x, y]"""
+    idx = getattr(mp_pose.PoseLandmark, name).value
     lm = lms.landmark[idx]
     return [lm.x * w, lm.y * h]
 
 
 # --------------------------------------------------------------------------- #
-#  main
+#  メイン関数
 # --------------------------------------------------------------------------- #
 def analyze_set_image(
     image_path: str,
@@ -55,29 +61,28 @@ def analyze_set_image(
     Parameters
     ----------
     image_path : str
-        Path to the still frame (jpg/png) showing the Set position.
+        解析対象の静止画像 (jpg/png) パス。
     front_leg : {'left', 'right'}
-        Athlete's **front (lead)** leg side.
+        アスリートの **前脚 (リード脚)** 側。
     with_overlay : bool, default False
-        If True, include the skeleton-overlayed frame under key ``'overlay'``.
+        True の場合，骨格ラインを描画した画像を 'overlay' キーで返す。
 
     Returns
     -------
     dict | None
-        Angle measurements; None if pose detection failed.
+        成功時: 角度辞書 (＋ overlay)。失敗時: None
     """
     img = cv2.imread(image_path)
     if img is None:
         raise FileNotFoundError(f"Could not read image: {image_path}")
 
     lms, annotated = detect_pose_bgr(img, static=True)
-    if lms is None:
-        return None  # pose not found
+    if lms is None:  # 骨格検出失敗
+        return None
 
     h, w = img.shape[:2]
-    g = lambda name: _get_xy(lms, name, w, h)
+    g = lambda n: _get_xy(lms, n, w, h)
 
-    # choose landmarks depending on the athlete's lead leg
     if front_leg.lower() == "left":
         rear = ("RIGHT_HIP", "RIGHT_KNEE", "RIGHT_HEEL")
         front = ("LEFT_HIP", "LEFT_KNEE", "LEFT_HEEL")
